@@ -2,7 +2,11 @@
 #define _LOGGER_H
 
 #include <stdint.h>
+#ifndef _WIN32
 #include <syslog.h>
+#else
+#include "syslog.h"
+#endif
 
 int logger_init(int syslog);
 void logger_stderr(const char *msg, ...);

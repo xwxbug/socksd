@@ -83,7 +83,7 @@ close_target(struct target_context *target) {
 static void
 target_alloc_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
     struct target_context *target = handle->data;
-    buf->base = malloc(suggested_size) + target->header_len;
+    buf->base = (char*)malloc(suggested_size) + target->header_len;
     buf->len = suggested_size - target->header_len;
 }
 

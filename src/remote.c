@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 
 #include "uv.h"
 #include "util.h"

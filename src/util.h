@@ -4,7 +4,12 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <time.h>
+#ifdef _WIN32
+
+#else
 #include <netinet/in.h>
+#endif
+
 
 #define container_of(ptr, type, member) ((type*)(((char*)(ptr)) - offsetof(type, member)))
 

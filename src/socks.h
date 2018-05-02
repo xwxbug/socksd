@@ -1,31 +1,61 @@
 #ifndef _SOCKS_H
 #define _SOCKS_H
-
+#ifdef _MSC_VER
+#pragma pack(push,1)
 struct socks5_method_request {
-    char ver;
-    char nmethods;
-    char methods[255];
+	char ver;
+	char nmethods;
+	char methods[255];
+};
+
+struct socks5_method_response {
+	char ver;
+	char method;
+};
+
+struct socks5_request {
+	char ver;
+	char cmd;
+	char rsv;
+	char atyp;
+	char addr[0];
+};
+
+struct socks5_response {
+	char ver;
+	char rep;
+	char rsv;
+	char atyp;
+};
+#pragma pack(pop)
+#else
+struct socks5_method_request {
+	char ver;
+	char nmethods;
+	char methods[255];
 }__attribute__((packed));
 
 struct socks5_method_response {
-    char ver;
-    char method;
+	char ver;
+	char method;
 }__attribute__((packed));
 
 struct socks5_request {
-    char ver;
-    char cmd;
-    char rsv;
-    char atyp;
-    char addr[0];
+	char ver;
+	char cmd;
+	char rsv;
+	char atyp;
+	char addr[0];
 }__attribute__((packed));
 
 struct socks5_response {
-    char ver;
-    char rep;
-    char rsv;
-    char atyp;
+	char ver;
+	char rep;
+	char rsv;
+	char atyp;
 }__attribute__((packed));
+#endif
+
 
 enum s5_auth_method {
     S5_AUTH_NONE = 0x00,

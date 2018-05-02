@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _MSC_VER
+#define __ANSI__GETOPT__
+#include "getopt.c"
+#else
 #include <getopt.h>
+#endif
 #include <assert.h>
 
 #include "uv.h"
@@ -15,12 +20,18 @@
 #include "daemon.h"
 #include "socksd.h"
 
+#ifdef _MSC_VER
+#pragma comment(lib,"ws2_32.lib")
+#pragma comment(lib,"psapi.lib")
+#pragma comment(lib,"IPHLPAPI.lib")
+#pragma comment(lib,"Userenv.lib")
+#endif
 
 #define MAX_DNS_NUM 4
 
 extern int signal_process(char *signal, const char *pidfile);
 
-static int daemon_mode = 1;
+static int daemon_mode = 0;
 static int concurrency = 0;
 static int nameserver_num = 0;
 static char *nameservers[MAX_DNS_NUM];
@@ -143,7 +154,11 @@ close_loop(uv_loop_t *loop) {
 
 static void
 signal_cb(uv_signal_t *handle, int signum) {
+#ifdef _MSC_VER
+    if (signum == SIGINT || signum == ((_crt_signal_t)5)) {
+#else
     if (signum == SIGINT || signum == SIGQUIT) {
+#endif
         char *name = signum == SIGINT ? "SIGINT" : "SIGQUIT";
         logger_log(LOG_INFO, "Received %s, scheduling shutdown...", name);
         for (int i = 0; i < 2; i++) {
@@ -165,7 +180,11 @@ signal_cb(uv_signal_t *handle, int signum) {
 void
 setup_signal(uv_loop_t *loop, uv_signal_cb cb, void *data) {
     signals[0].signum = SIGINT;
+#ifdef _MSC_VER
+    signals[1].signum = SIGABRT_COMPAT;
+#else
     signals[1].signum = SIGQUIT;
+#endif
     signals[2].signum = SIGTERM;
     for (int i = 0; i < 2; i++) {
         signals[i].sig.data = data;
@@ -180,9 +199,9 @@ init(void) {
 
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
-
+#ifndef _WIN32
     signal(SIGPIPE, SIG_IGN);
-
+#endif
     resolver_prepare(nameserver_num);
     uv_key_create(&thread_resolver_key);
 

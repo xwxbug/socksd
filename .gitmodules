@@ -3,4 +3,4 @@
 	url = https://github.com/libuv/libuv
 [submodule "3rd/udns"]
 	path = 3rd/udns
-	url = https://github.com/lparam/udns
+	url = https://github.com/xwxbug/udns.git

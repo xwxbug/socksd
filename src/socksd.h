@@ -1,7 +1,10 @@
 #ifndef _SOCKSD_H
 #define _SOCKSD_H
 
+#ifndef _WIN32
 #include <execinfo.h>
+#endif
+
 #include <uv.h>
 #include "socks.h"
 #include "resolver.h"

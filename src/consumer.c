@@ -1,5 +1,8 @@
 #define _GNU_SOURCE
+#ifndef _WIN32
 #include <sys/prctl.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -91,11 +94,11 @@ consumer_start(void *arg) {
     struct server_context *ctx;
 
     ctx = arg;
-
-    char name[24] = {0};
-    sprintf(name, "consumer-%d", ctx->index + 1);
-    prctl(PR_SET_NAME, name, 0, 0, 0);
-
+#ifndef _WIN32
+	char name[24] = { 0 };
+	sprintf(name, "consumer-%d", ctx->index + 1);
+	prctl(PR_SET_NAME, name, 0, 0, 0);
+#endif
     loop = malloc(sizeof(uv_loop_t));
     uv_loop_init(loop);
     listener_event_loops[ctx->index] = *loop;

@@ -3,13 +3,23 @@
 #include <string.h>
 #include <fcntl.h>
 #include <errno.h>
+#ifndef _WIN32
+#include <WS2tcpip.h>
 #include <unistd.h>
+#endif
 #include <assert.h>
+#ifndef _WIN32
 #include <netinet/in.h>
 #include <sys/socket.h>
-
+#endif
 #include "uv.h"
+#ifdef _MSC_VER
+#include "../3rd/udns/udns.h"
+#else
 #include "udns.h"
+#endif
+
+
 #include "util.h"
 #include "logger.h"
 #include "resolver.h"
@@ -33,10 +43,12 @@ struct resolver_context {
 
 extern int verbose;
 static int mode = MODE_IPV4;
-
+#ifndef sa_family_t
+#define sa_family_t unsigned long
+#endif
 static struct sockaddr *
 choose_address(struct dns_query *query, sa_family_t sa) {
-    for (int i = 0; i < query->response_count; i++) {
+    for (size_t i = 0; i < query->response_count; i++) {
         if (query->responses[i]->sa_family == sa) {
             return query->responses[i];
         }
@@ -75,7 +87,7 @@ handle_result(struct dns_query *query) {
 
     query->callback(addr, query->data);
 
-    for (int i = 0; i < query->response_count; i++) {
+    for (size_t i = 0; i < query->response_count; i++) {
         free(query->responses[i]);
     }
 

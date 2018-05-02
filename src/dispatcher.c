@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
+
 #include <string.h>
 #include <assert.h>
 
@@ -63,7 +66,12 @@ ipc_connection_cb(uv_stream_t *ipc_pipe, int status) {
 static void
 signal_cb(uv_signal_t *handle, int signum) {
     struct ipc_server_ctx *ipc = handle->data;
+#ifdef _MSC_VER
+    if (signum == SIGINT || signum == ((_crt_signal_t)5)){
+#else
     if (signum == SIGINT || signum == SIGQUIT) {
+#endif
+
         char *name = signum == SIGINT ? "SIGINT" : "SIGQUIT";
         logger_log(LOG_INFO, "Received %s, scheduling shutdown...", name);
         for (int i = 0; i < ipc->num_servers; i++) {

@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
+#ifndef _WIN32
 #include <execinfo.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -101,7 +105,7 @@ print_buffer(const void *data, uint32_t count, uint32_t width, uint32_t linelen)
             else
                 x = lb.uc[i] = *(volatile uint8_t *)data;
             printf(i % (linelen / 2) ? " %0*x" : "  %0*x", width * 2, x);
-            data += width;
+            (char*)data += width;
         }
 
         while (thislinelen < linelen) {

@@ -2,7 +2,9 @@
 #define _RESOLVER_H
 
 #include <stdint.h>
+#ifndef _WIN32
 #include <sys/socket.h>
+#endif
 #include <uv.h>
 
 
